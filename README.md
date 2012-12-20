@@ -1,0 +1,4 @@
+fun
+===
+
+Funktionale Programmierung
