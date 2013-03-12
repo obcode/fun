@@ -1,0 +1,521 @@
+% Functional Programming  
+  --- Introduction ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Why Haskell?
+
+-   build secure, error-free, systems used by thousands of people, e.g.,
+
+    -   Unix Window Manager [Xmonad](http://xmonad.org/)
+
+    -   [Cryptol](http://www.cryptol.net/)
+
+-   ideal for DSLs
+
+-   laboratory for new ideas presented in the clearest possible way
+
+-   help you think about programming in a different way
+
+-   perfect knowledge for using *Mainstream* functional languages afterwards
+
+    -   F# on .NET
+
+    -   Scala, Clojure on the JVM
+
+    -   Erlang
+
+## What is functional programming?
+
+-   high-level view of programming
+
+-   offers a variety of features
+
+-   to build elegant yet powerful libraries of functions
+
+    ~~~~
+    addDouble x y = 2*(x+y)
+    ~~~~
+
+-   model of functional programming is simple, e.g.,
+
+    3 + addDouble 4 5  
+    $\Rightarrow$ 3 + 2`*`(4+5)  
+    $\Rightarrow$ 3 + 2`*`9  
+    $\Rightarrow$ 3 + 18  
+    $\Rightarrow$ 21
+
+## What is a function?
+
+-   a **function** is a box with some inputs and an output
+
+-   the output value depends on the input values
+
+-   output = result, inputs = arguments or parameters
+
+-   giving particular inputs to a function is called **function application**
+
+-   example: (12 + 34) represents application of the function + to 12 and 34
+
+## Types
+
+-   a functions takes inputs of a particular kind, e.g., numbers
+
+-   and produces a result of a particular kind
+
+-   a collection of values of the same sort is called a **type**, e.g., all numbers
+
+-   example: (+) takes to values of type `Integer` and produces an `Integer`
+
+-   in modelling:
+
+    -   types represent the *things* in the domain
+
+    -   types often correspond to *nouns*
+
+    -   functions, which transform or combine values from these types, are like *verbs*
+
+## The Haskell programming language
+
+-   first defined 1990
+
+-   current version: Haskell 2010
+
+-   named after Haskell B. Curry, a $\lambda$ calculus pioneer
+
+-   various links on <http://ob.cs.hm.edu/lectures/fun>
+
+-   we use GHC/GHCi which is part of the **Haskell Platform**
+
+## Expressions and evaluation
+
+-   **expression**: `(7 - 3) * 2`
+
+-   **evaluation**: `(7 - 3) * 2` $\Rightarrow$ `4 * 2` $\Rightarrow$ `8`
+
+-   **value**: `8`
+
+-   that's exactly what we do in functional programming
+
+    -   defining functions and other values
+
+    -   compute by evaluating expressions
+
+## Definitions
+
+-   a Haskell **programm** consists of a number of definitions
+
+-   a Haskell **definition** associates a **name** (**identifier**) with a value of a particular **type**
+
+-   simplest case
+
+    ~~~~ {.haskell}
+    name :: type
+    name = expression
+    ~~~~
+
+    as in
+
+    ~~~~ {.haskell}
+    size :: Integer
+    size = 12 + 13
+    ~~~~
+
+-   `::` means *is a/is an*, e.g., size is an Integer
+
+-   value names begin with a **small letter**
+
+-   type names begin with a **capital letter**
+
+## Function definitions
+
+-   example:
+
+    ~~~~ {.haskell}
+    square :: Integer -> Integer
+    square n = n*n
+    ~~~~
+
+-   first line can be read as
+
+    *square is a function taking an Integer to an Integer*
+
+-   second line means
+
+    *when square is applied to an unknown or variable n, the result is n`*`n*
+
+-   examples with concrete parameters
+
+    ~~~~ {.haskell}
+    square 5 = 5*5
+    ~~~~
+
+    and
+
+    ~~~~ {.haskell}
+    square (2+3) = (2+3)*(2+3)
+    ~~~~
+
+## General form
+
+-   function definition
+
+    ~~~~ {.haskell}
+    name x1 x2 ... xk = e
+    ~~~~
+
+    with
+
+    -   name: `name`
+
+    -   formal parameters: `x1`, `x2`, ..., `xk`
+
+    -   result: `e`
+
+-   type signature
+
+    ~~~~ {.haskell}
+    name :: t1 -> t2 -> ... -> tk -> t
+    ~~~~
+
+    with
+
+    ~~~~ {.haskell}
+    x1 :: t1
+    x2 :: t2
+    ...
+    xk :: tk
+    e  :: t
+    ~~~~
+
+## Thompsons horses
+
+-   examples using pictures of horses
+
+    ~~~~ {.haskell}
+    horse :: Picture
+    ~~~~
+
+    ![](img/01/horse.jpg)
+
+## Flipping it horizontally
+
+-   type signature
+
+    ~~~~ {.haskell}
+    flipH :: Picture -> Picture
+    ~~~~
+
+-   `flipH horse`
+
+    ![](img/01/horseFlipH.jpg)
+
+## Flipping it vertically
+
+-   type signature
+
+    ~~~~ {.haskell}
+    flipV :: Picture -> Picture
+    ~~~~
+
+-   `flipV horse`
+
+    ![](img/01/horseFlipV.jpg)
+
+## Scaling
+
+-   type signature
+
+    ~~~~ {.haskell}
+    scale :: Picture -> Integer -> Picture
+    ~~~~
+
+-   `scale horse 2`
+
+    ![](img/01/horseScale2.jpg)
+
+## Combining both
+
+-   rotating
+
+    ~~~~ {.haskell}
+    rotate :: Picture -> Picture
+    rotate horse = flipH (flipV horse)
+    ~~~~
+
+-   `flipH (flipV horse)`
+
+    ![](img/01/horseFlipVFlipH.jpg)
+
+## `rotate` -- the Haskell way
+
+-   combining functions directly
+
+    ~~~~ {.haskell}
+    rotate = flipH . flipV
+    ~~~~
+
+-   The `.`-**operator** is called **function composition**
+
+-   when given a value, apply `flipV` and then apply `flipH` to the result
+
+## Types and functional programming
+
+-   a type gives a **constraint** and tells us about the result
+
+-   **type errors** are caught before compilation by the **type checker**
+
+-   when we want to use functions like
+
+    ~~~~ {.haskell}
+    whiteHorse :: Picture
+    rotate :: Picture -> Picture
+    ~~~~
+
+    we don't need to know any internals about the type `Picture`
+
+-   this is called **type abstraction**
+
+## The essence of Haskell programming
+
+-   in Haskell we use a rich collection of data types to **model** the objects
+
+-   programming is done by writing functions like
+
+    ~~~~ {.haskell}
+    rotate :: Picture -> Picture
+    rotate pic = flipH (flipV pic)
+    ~~~~
+
+-   computing with these functions is done by calculation (evaluation) to calculate a result
+
+## Haskell variables vs. variables in imperative languages
+
+-   Haskell variables are like mathematical variables
+
+-   in languages like Java a variable is like a box
+
+-   Haskell has **no state**
+
+-   Haskells functions **don't have side-effects**
+
+## Haskells advantages
+
+-   Haskell programms are *higher-level*: "what, not how"
+
+-   functions can be passed around like *data*
+
+-   functions are without side-effects
+
+    -   I/O, ... is done using **monads**
+
+-   Haskell programms are easy to *parallelize*, because there is no (shared) state
+
+-   equations define properties. therefore, it's easier to write *proofs*
+
+-   without side-effects it's easier to refactor our programms to have a different/better design
+
+## Domain-specific languages
+
+-   Haskell is a general purpose language
+
+-   DSLs are languages used for solving problems in a specific domain
+
+-   examples:
+
+    -   $\LaTeX$, a language for type setting
+
+    -   GraphViz, for graph layout
+
+-   why **embedded DSLs** in Haskell
+
+    -   rich set of data types, including functions and self-defined data types
+
+    -   absence of side-effects
+
+    -   polymorphism, type classes, monads
+
+## A SVG `Picture` model
+
+-   pictures of horses, as seen before
+
+-   declarations:
+
+    ~~~~ {.haskell}
+    horse        :: Picture
+    flipH        :: Picture -> Picture
+    flipV        :: Picture -> Picture
+    invertColour :: Picture -> Picture
+    above        :: Picture -> Picture -> Picture
+    beside       :: Picture -> Picture -> Picture
+    scale        :: Picture -> Integer -> Picture
+    ~~~~
+
+-   examples of expressions:
+
+    ~~~~ {.haskell}
+    horse `above` (flipH horse)
+    scale (horse `above` (flipH horse)) 42
+    mirror pic = pic `beside` (flipV pic)
+    ~~~~
+
+-   these pictures can be displayed in any web browser supporting SVG 2010
+
+## A list model for `Picture`s
+
+-   horses as two-dimensional lists of characters
+
+    ~~~~
+    .......##...
+    .....##..#..
+    ...##.....#.
+    ..#.......#.
+    ..#...#...#.
+    ..#...###.#.
+    .#....#..##.
+    ..#...#.....
+    ...#...#....
+    ....#..#....
+    .....#.#....
+    ......##....
+    ~~~~
+
+-   list of lists
+
+## Flipping
+
+-   `flipH horse`
+
+    ~~~~
+    ......##....
+    .....#.#....
+    ....#..#....
+    ...#...#....
+    ..#...#.....
+    .#....#..##.
+    ..#...###.#.
+    ..#...#...#.
+    ..#.......#.
+    ...##.....#.
+    .....##..#..
+    .......##...
+    ~~~~
+
+-   reversing the outer list
+
+    ~~~~ {.haskell}
+    flipH = reverse
+    ~~~~
+
+## More flipping
+
+-   `flipV horse`
+
+    ~~~~
+    ...##.......
+    ..#..##.....
+    .#.....##...
+    .#.......#..
+    .#...#...#..
+    .#.###...#..
+    .##..#....#.
+    .....#...#..
+    ....#...#...
+    ....#..#....
+    ....#.#.....
+    ....##......
+    ~~~~
+
+-   reversing all inner lists
+
+    ~~~~ {.haskell}
+    flipV = map reverse
+    ~~~~
+
+-   `map` takes a function (`reverse`) and a list (`horse`) and applies the function to all elements of the list
+
+## `above` and `beside`
+
+-   `above` concatenates the two outer lists
+
+    ~~~~ {.haskell}
+    above = (++)
+    ~~~~
+
+-   `beside` concatenates the first inner list of the first picture and the first inner list of the second picture, ...
+
+    ~~~~ {.haskell}
+    beside = zipWith (++)
+    ~~~~
+
+## Tests
+
+-   testing Haskell functions
+
+    ~~~~ {.haskell}
+    test_rotate, test_flipV, test_flipH :: Bool
+
+    test_rotate = flipV (flipH horse) == flipH (flipV horse)
+    test_flipV  = flipV (flipV horse) = horse
+    test_flipH  = flipH (flipV horse) = horse -- wrong
+    ~~~~
+
+-   the first two test should give the answer `True`
+
+-   the third test should fail with a result of `False`
+
+-   there are also frameworks, like [HUnit](http://hackage.haskell.org/package/HUnit)
+
+## Properties-based testing
+
+-   we can also formulate properties and test them, e.g.,
+
+    -   if we flip a picture twice in a mirror we should get back the original
+
+-   properties as Haskell functions
+
+    ~~~~ {.haskell}
+    prop_rotate, prop_flipV, prop_flipH :: Picture -> Bool
+
+    prop_rotate pic = flipV (flipH pic) == flipH (flipV pic)
+    prop_flipV  pic = flipV (flipV pic) == pic
+    prop_flipH  pic = flipH (flipV pic) == pic -- wrong
+    ~~~~
+
+-   we can check these properties with [QuickCheck](http://hackage.haskell.org/package/QuickCheck), e.g.,
+
+    ~~~~
+    ghci> quickCheck prop_rotate
+    +++ OK, passed 100 tests.
+    ~~~~
+
+-   the third one should fail:
+
+    ~~~~
+    ghci> quickCheck prop_flipH 
+    *** Failed! Falsifiable (after 4 tests and 4 shrinks):
+    ["ab"]
+    ~~~~
+
+    it gives us the simplest case where it goes wrong, a picture with one line and two characters
+
+## Proof
+
+-   property-based testing replaced one test with a hundred
+
+-   a **proof** is a logical or mathematical argument to show something holds *in all circumstances*
+
+-   proof is possible for all languages, but substantially easier for functional languages
+
+-   example:
+
+    -   `flipV (flipH pic) == flipH (flipV pic)`
+
+    -   `flipV` affects each line but leaves the lines in the same order
+
+    -   `flipH` leaves each line unaffected while reversing the order of the list of lines
+
+    -   because the two functions affect different aspects it is immaterial which is applied first
+
+
+<!-- vim:spell spelllang=en: -->

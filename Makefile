@@ -1,6 +1,7 @@
 # (c) 2013 Oliver Braun
 
-SRCS:=	00_About.txt
+SRCS:=	00_About.txt \
+		01_Introduction.txt
 
 SLIDYDIR:=	slidy
 
@@ -64,7 +65,7 @@ $(PRESDIR):
 $(PRESDIR)/%.html: %.txt
 	sed -e "s,@commit@,$(COMMIT), ;\
 	    s/@date@/$(DATE)/" includes/preshdr.html.in > includes/preshdr.html
-	pandoc -t slidy -s -S -V slidy-url=$(SLIDYDIR) --webtex \
+	pandoc -t slidy -s -S -V slidy-url=$(SLIDYDIR) --mathml \
 	   --slide-level=2 --self-contained -H includes/preshdr.html -o $@ $<
 
 presentations:	$(PRESDIR) $(PRESS)
@@ -80,7 +81,7 @@ README.html: README.md
 # taken from http://brettterpstra.com/watch-for-file-changes-and-refresh-your-browser-automatically/
 
 watch:
-	watch.rb presentation seiib
+	watch.rb presentation fun
 
 # push to ob.cs.hm.edu
 
