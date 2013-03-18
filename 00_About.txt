@@ -1,8 +1,0 @@
-% Functional Programming  
-  --- About this lecture ---
-% Prof. Dr. Oliver Braun
-% SS 2013
-
-## Why functional programming matters
-
--   ...

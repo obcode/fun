@@ -1,7 +1,6 @@
 # (c) 2013 Oliver Braun
 
-SRCS:=	00_About.txt \
-		01_Introduction.txt
+SRCS:=	01_Introduction.txt
 
 SLIDYDIR:=	slidy
 
