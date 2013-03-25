@@ -316,7 +316,7 @@
     4523.0
     ~~~~
 
--   sientific notation as usual
+-   scientific notation as usual
 
     ~~~~ {.haskell}
     231.61e-2
