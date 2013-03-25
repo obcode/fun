@@ -104,6 +104,16 @@ webimgs:	$(WEBIMG_DIR) $(WEBIMGS)
 test:
 	echo "Hallo" | gsed -e '$$a\hallo'
 
+# last slide of the lecture
+LAST:=	00.html
+GROUP:=	
+LASTSLIDE:=	../$(PRESDIR)/$(LAST)
+LASTSLIDE_HTML:=	lastslide$(GROUP).html
+
+lastslide: html
+	sed "s,%%url%%,$(LASTSLIDE)," includes/lastslide.html > html/$(LASTSLIDE_HTML)
+	rsync html/$(LASTSLIDE_HTML) ${UPLOAD_HOST}:${UPLOAD_DIR}/$(HTMLDIR)/$(LASTSLIDE_HTML)
+
 UPLOAD_HOST=	ob.cs.hm.edu
 UPLOAD_DIR=	www/static/docs/lectures/fun
 
