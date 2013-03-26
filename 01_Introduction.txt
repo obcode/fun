@@ -323,7 +323,7 @@
 
 -   examples:
 
-    -   $\LaTeX$, a language for type setting
+    -   LaTeX, a language for type setting
 
     -   GraphViz, for graph layout
 
