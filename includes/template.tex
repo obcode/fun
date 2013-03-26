@@ -2,7 +2,7 @@
 12pt,a4paper]{scrartcl}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage{german}
+%\usepackage{german}
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
@@ -40,7 +40,7 @@ $endif$
 \pagenumbering{arabic}
 \lhead{\itshape $title$}
 \chead{}
-\rhead{\itshape{\nouppercase{\leftmark}}}
+\rhead{summer term 2013}
 \lfoot{\copyright 2013 Oliver Braun}
 \cfoot{}
 \rfoot{\thepage}
@@ -146,10 +146,10 @@ $if(title)$
 \title{$title$}
 $endif$
 \author{$for(author)$$author$$sep$ \and $endfor$ \\
-    \small Fakultät für Informatik und Mathematik\\[-0.3em]
-    \small Hochschule München}
+    \small Department of Computer Science and Mathematics\\[-0.3em]
+    \small Munich University of Applied Sciences}
 \date{$date$\\[1em]
-    \small Stand: $stand$\\
+    \small $stand$\\
     \small \url{https://github.com/obcode/fun/commit/$commit$}
     }
 \begin{document}
