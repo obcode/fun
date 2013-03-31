@@ -1,0 +1,308 @@
+% Functional Programming  
+  --- Designing and writing programs ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Designing a program in Haskell
+
+> Design is what we do before we start writing detailed Haskell code.
+
+-   Do I understand what I need to do?
+
+-   Can I say anything about the types at this stage?
+
+-   Can I break the problem down into simpler parts?
+
+## Local definitions
+
+We want to create the following picture:
+
+![](img/03/fourhorses.jpg)
+
+## First step: defining top-level
+
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    left  = ...
+    right = ...
+~~~~
+
+## Next step: defining `left`
+ 
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    left  = pic `above` invertColour pic
+    right = ...
+~~~~
+
+## Possible next step: defining `right` from scratch
+ 
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    left  = pic `above` invertColour pic
+    right = invertColour (flipV pic) `above` flipV pic
+~~~~
+
+## or: flip only once
+
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    left    = pic `above` invertColour pic
+    right   = invertColour flipped `above` flipped
+    flipped = flipV pic
+~~~~
+
+## or: use `left` in the definition of `right`
+
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    left    = pic `above` invertColour pic
+    right   = invertColour (flipV left)
+~~~~
+
+## or: define a local function
+
+~~~~ {.haskell}
+fourPics :: Picture -> Picture
+fourPics pic = left `beside` right
+  where
+    stack p = p `above` invertColour p
+    left    = stack pic
+    right   = stack (invertColour (flipV left))
+~~~~
+
+## `where` and `let`
+
+-   `where` makes definitions local to a function, e.g.,
+
+    ~~~~ {.haskell}
+    funnyFun x y c
+        | a     = b
+        | not a = -b
+      where
+        a = h && f
+        h = (x + y) >= c
+        f = True
+    ~~~~
+
+-   `let` makes definition local to an expression, e.g.,
+
+    ~~~~ {.haskell}
+    funnyFun x y c =
+        let a = h && f
+            h = (x + y) >= c
+            f = True
+        in if a then b else -b
+    ~~~~
+
+## Layout of `where` and `let`
+
+-   `where` and `let` can start somewhere to the right of the enclosing definition
+
+-   all definitions have to be aligned vertically
+
+## Scopes
+
+-   the scope of a top-level definition is the whole file
+
+-   example
+
+    ~~~~ {.haskell}
+    isOdd :: Int -> Bool
+    isOdd n
+        | n<=0      = False
+        | otherwise = isEven (n-1)
+
+    isEven :: Int -> Bool
+    isEven n
+        | n<0       = False
+        | n==0      = True
+        | otherwise = isOdd (n-1)
+    ~~~~
+
+## Defining types for ourselves: enumerated types
+
+Rock --- Paper --- Scissors
+
+-   first approach
+
+    ~~~~ {.haskell}
+    data Move = Rock | Paper | Scissors
+    ~~~~
+
+-   we want to compare them and print them out
+
+    ~~~~ {.haskell}
+    data Move = Rock | Paper | Scissors
+        deriving (Eq, Show)
+    ~~~~
+
+## Defining functions
+
+-   beating a move
+
+    ~~~~ {.haskell}
+    beat :: Move -> Move
+    beat Rock     = Paper
+    beat Paper    = Scissors
+    beat Scissors = Rock
+    ~~~~
+
+-   losing against a move
+
+    ~~~~ {.haskell}
+    lose :: Move -> Move
+    lose Rock  = Scissors
+    lose Paper = Rock
+    lose _     = Paper
+    ~~~~
+
+    `_` is the wildcard pattern
+
+## Standard types
+
+-   some standard types can be defined in this way
+
+-   for example `Bool`
+
+    ~~~~ {.haskell}
+    data Bool = True | False
+        deriving (Show, Eq, Ord)
+    ~~~~
+
+-   deriving `Ord` means that `False < True`
+
+## Recursion
+
+-   factorial
+
+    ~~~~ {.haskell}
+    fac :: Integer -> Integer
+    fac n
+        | n==0 = 1
+        | n>0  = fac (n-1) * n
+    ~~~~
+
+-   primitive recursion
+
+## Recursion and calculation
+
+`fac 4`  
+$\Rightarrow$ `fac 3 * 4`  
+$\Rightarrow$ `(fac 2 * 3) * 4`  
+$\Rightarrow$ `((fac 1 * 2) * 3) * 4`  
+$\Rightarrow$ `(((fac 0 * 1) * 2) * 3) * 4`  
+$\Rightarrow$ `(((1 * 1) * 2) * 3) * 4`  
+$\Rightarrow$ `((1 * 2) * 3) * 4`  
+$\Rightarrow$ `(2 * 3) * 4`  
+$\Rightarrow$ `6 * 4`  
+$\Rightarrow$ `24`  
+
+## Undefined or error values
+
+-   applying `fac` to a negative number
+
+    ~~~~
+    *Fac> fac (-2)
+    *** Exception: Fac.hs:(4,1)-(6,26):
+        Non-exhaustive patterns in function fac
+    ~~~~
+
+-   one possible solution
+
+    ~~~~ {.haskell}
+    fac n
+        | n==0 = 1
+        | n>0  = fac (n-1) * n
+        | n<0  = 0
+    ~~~~
+
+-   another one
+
+    ~~~~ {.haskell}
+    fac n
+        | n==0 = 1
+        | n>0  = fac (n-1) * n
+        | n<0  = error "fac only defined on natural numbers"
+    ~~~~
+
+## General recursion
+
+-   the sequence of Fibonacci numbers
+
+    ~~~~ {.haskell}
+    fib :: Integer -> Integer
+    fib n
+        | n==0 = 0
+        | n==1 = 1
+        | n>1  = fib (n-2) + fib(n-1)
+    ~~~~
+
+## HUnit testing
+
+-   should calculate the maximum of three numbers:
+
+    ~~~~ {.haskell}
+    maxThree :: Integer -> Integer -> Integer -> Integer
+    ~~~~
+
+-   defining [HUnit](http://hackage.haskell.org/package/HUnit) tests
+
+    ~~~~ {.haskell}
+    import Test.HUnit
+
+    testMax1 = TestCase (assertEqual "for: maxThree 6 4 1" 6 (maxThree 6 4 1))
+    testMax2 = TestCase (assertEqual "for: maxThree 6 6 6" 6 (maxThree 6 6 6))
+    testMax3 = TestCase (assertEqual "for: maxThree 2 6 6" 6 (maxThree 2 6 6))
+    testMax4 = TestCase (assertEqual "for: maxThree 2 2 6" 6 (maxThree 2 2 6))
+
+    testsMax = TestList [testMax1, testMax2, testMax3, testMax4]
+    ~~~~
+
+-   running the tests
+
+    ~~~~
+    *MaxThree> runTestTT testsMax 
+    Cases: 4  Tried: 4  Errors: 0  Failures: 0
+    Counts {cases = 4, tried = 4, errors = 0, failures = 0}
+    ~~~~
+
+## Failure
+
+-   the following **wrong** function passes all four tests
+
+    ~~~~ {.haskell}
+    maxThree x y z
+        | x > z && x > y = x
+        | y > x && y > z = y
+        | otherwise      = z
+    ~~~~
+
+-   but if we add another one:
+
+    ~~~~ {.haskell}
+    testMax5 = TestCase (assertEqual "for: maxThree 6 6 2" 6 (maxThree 6 6 2))
+    ~~~~
+
+    we get
+
+    ~~~~
+    *MaxThree> runTestTT testsMax 
+    ### Failure in: 4
+    for: maxThree 6 6 2
+    expected: 6
+     but got: 2
+    Cases: 5  Tried: 5  Errors: 0  Failures: 1
+    Counts {cases = 5, tried = 5, errors = 0, failures = 1}
+    ~~~~
+<!-- vim:spell spelllang=en: -->

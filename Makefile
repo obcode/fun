@@ -1,7 +1,8 @@
 # (c) 2013 Oliver Braun
 
 SRCS:=	01_Introduction.txt \
-		02_Basic.txt
+		02_Basic.txt \
+		03_Programs.txt
 
 GERMAN= #
 
