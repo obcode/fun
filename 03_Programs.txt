@@ -176,7 +176,7 @@ Rock --- Paper --- Scissors
 -   for example `Bool`
 
     ~~~~ {.haskell}
-    data Bool = True | False
+    data Bool = False | True
         deriving (Show, Eq, Ord)
     ~~~~
 
