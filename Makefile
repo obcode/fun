@@ -9,6 +9,8 @@ GERMAN= #
 LECTURE_NAME:=	fun
 SEMESTER:=	summer term 2013
 
+GITHUB=	YES
+
 LECTURE_INCLUDES=	../../includes
 
 includes/lecture.mk:
