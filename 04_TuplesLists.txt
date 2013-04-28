@@ -1,0 +1,447 @@
+% Functional Programming  
+  --- Data types, tuples and lists ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Tuples and lists
+
+Tuple
+:   **fixed** number of values of **fixed** types which might be different
+
+List
+:   **arbitrary** number of values all of the **same** type
+
+## Individual Items
+
+-   examples
+
+    ~~~~ {.haskell}
+    ("Salt: 1kg", 139)
+    ("Plain crisps", 25)
+    ~~~~
+
+-   type of above terms is `(String, Int)`
+
+-   we could use a type synonym
+
+    ~~~~ {.haskell}
+    type ShopItem = (String, Int)
+    ~~~~
+
+-   like this
+
+    ~~~~ {.haskell}
+    ("Salt: 1kg", 139) :: ShopItem
+    ~~~~
+
+## The shopping baskett
+
+-   represented as list of `ShopItem`s
+
+    ~~~~ {.haskell}
+    [ ("Salt: 1kg", 139), ("Plain crisps", 25)]
+    ~~~~
+
+-   with type `[(String, Int)]`, resp., `[ShopItem]`
+
+-   we can also give this type a name:
+
+    ~~~~ {.haskell}
+    type Basket = [ShopItem]
+    ~~~~
+
+## Tuple types
+
+-   a tuple
+
+    ~~~~ {.haskell}
+    (v1, v2, ..., vn)
+    ~~~~
+
+    of type
+
+    ~~~~ {.haskell}
+    (t1, t2, ..., tn)
+    ~~~~
+
+    consists of values
+
+    ~~~~ {.haskell}
+    v1 :: t1
+    v2 :: t2
+    ...
+    vn :: tn
+    ~~~~
+
+## Example
+
+-   function returning both, min and max
+
+    ~~~~ {.haskell}
+    minAndMax :: Integer -> Integer -> (Integer, Integer)
+    minAndMax x y
+        | x>=y      = (y,x)
+        | otherwise = (x,y)
+    ~~~~
+
+## Pattern Matching
+
+-   examples
+
+    ~~~~ {.haskell}
+    addPair :: (Integer, Integer) -> Integer
+    addPair (0,y) = y
+    addPair (x,y) = x+y
+    ~~~~
+
+    ~~~~ {.haskell}
+    shift :: ((Integer,Integer),Integer) -> (Integer, (Integer, Integer))
+    shift ((x,y),z) = (x,(y,z))
+    ~~~~
+
+-   `ShopItem` selectors
+
+    ~~~~ {.haskell}
+    name :: ShopItem -> String
+    name (n,p) = n
+    price :: ShopItem -> Int
+    price (n,p) = p
+    ~~~~
+
+-   using `fst` and `snd`
+
+    ~~~~ {.haskell}
+    name = fst
+    price = snd
+    ~~~~
+
+## Pattern Matching vs. `fst` and `snd`
+
+-   Pattern Matching
+
+    ~~~~ {.haskell}
+    addPair (x,y) = x+y
+    ~~~~
+
+-   vs.
+
+    ~~~~ {.haskell}
+    addPair p = fst p + snd p
+    ~~~~
+
+-   generally the definition using Pattern Matching is more readable
+
+## A more efficient `fib` function
+
+~~~~ {.haskell}
+fibStep :: (Integer, Integer) -> (Integer, Integer)
+fibStep (u,v) = (v,u+v)
+
+fibPair :: Integer -> (Integer, Integer)
+fibPair n
+    | n==0      = (0,1)
+    | otherwise = fibStep (fibPair (n-1))
+
+fastFib :: Integer -> Integer
+fastFib = fst . fibPair
+~~~~
+
+# Algebraic Types
+
+## Enumerated Types
+
+~~~~ {.haskell}
+data Move = Rock | Paper | Scissors
+    deriving (Eq, Show)
+~~~~
+
+~~~~ {.haskell}
+score :: Move -> Move -> Int
+score Rock  Rock     = 0
+score Rock  Paper    = -1
+score Rock  Scissors = 1
+score Paper Rock     = 1
+...
+~~~~
+
+## Product Types
+
+-   instead of a tuple we can define a data type with a number of components or fields
+
+-   example
+
+    ~~~~ {.haskell}
+    data People = Person Name Age
+        deriving (Eq, Show)
+    ~~~~
+
+    with
+
+    ~~~~ {.haskell}
+    type Name = String
+    type Age = Int
+    ~~~~
+
+-   example values of type `People`
+
+    ~~~~ {.haskell}
+    Person "Hugo Maier" 34
+    Person "Anna Müller" 24
+    ~~~~
+
+## Product Types (2)
+
+-   Pattern Matching
+
+    ~~~~ {.haskell}
+    showPerson :: Person -> String
+    showPerson (Person name age) =
+                name ++ " -- " ++ show age
+    ~~~~
+
+-   elements of type `People` are constructed by applying the **binary** constructor `Person` to two appropriate arguments
+
+-   we can give the type of the constructor
+
+    ~~~~ {.haskell}
+    People :: String -> Int -> People
+    ~~~~
+
+## Alternatives
+
+-   example
+
+    ~~~~ {.haskell}
+    data Shape = Circle Float
+               | Rectangle Float Float
+        deriving (Eq,Ord,Show)
+    ~~~~
+
+-   example values
+
+    ~~~~ {.haskell}
+    Circle 3.0
+    Rectangle 45.9 87.6
+    ~~~~
+
+-   Pattern Matching
+
+    ~~~~ {.haskell}
+    isRound :: Shape -> Bool
+    isRound (Circle _) = True
+    isRounc _          = False
+
+    area :: Shape -> Float
+    area (Circle r)      = 3.14*r^2
+    area (Rectangle h w) = h*w
+    ~~~~
+
+-   constructor functions
+
+    ~~~~ {.haskell}
+    Circle    :: Float -> Shape
+    Rectangle :: Float -> Float -> Shape
+    ~~~~
+
+# Lists
+
+## Example Lists
+
+~~~~ {.haskell}
+[1,2,3,4,1,4]       :: [Integer]
+[True]              :: [Bool]
+
+['f','u','n']       :: String
+"fun"               :: String
+
+[fastFib,fastFib]   :: [Integer -> Integer]
+[[12,2],[2,12],[]]  :: [[Integer]]
+~~~~
+
+## Lists of Enumerated Types
+
+-   `[n..m]`
+
+    ~~~~ {.haskell}
+    [2..7] == [2,3,4,5,6,7]
+    [3.1..7.0] == [3.1,4.1,5.1,6.1,7.1]
+    ['a'..'m'] == "abcdefghijklm"
+    ~~~~
+
+-   `[n,p..m]`
+
+    ~~~~ {.haskell}
+    [7,6..3] == [7,6,5,4,3]
+    [0.0,0.3..1.0] == [0.0,0.3,0.6,0.8999999999999999]
+    ['a','c'..'n'] == "acegikm"
+    ~~~~
+
+## The `String` type
+
+-   `String`s are lists of `Char`s
+
+    ~~~~ {.haskell}
+    type String = [Char]
+    ~~~~
+
+-   `show` and `read`
+
+    ~~~~ {.haskell}
+    show (2+3) == "5"
+    show (True || False) == "True"
+    ~~~~
+
+    ~~~~ {.haskell}
+    (read "True" :: Bool) == True
+    (read "3" :: Int) == 3
+    ~~~~
+
+## List comprehensions
+
+-   description of a list
+
+    -   generate elements
+
+    -   test elements
+
+    -   transform elements
+
+-   example
+
+    ~~~~ {.haskell}
+    ex = [2,4,7]
+    [ 2*n | n <- ex ] == [4,8,14]
+    ~~~~
+
+    *take all `2*n` where `n` comes from `ex`*
+
+    `n<-ex` is a generator
+
+-   other transformation
+
+    ~~~~ {.haskell}
+    [ isEven n | n<-ex ] == [True,True,False]
+    ~~~~
+
+## List comprehensions --- more examples
+
+-   adding tests
+
+    ~~~~ {.haskell}
+    [ 2*n | n<-ex, isEven n, n>3 ]
+    ~~~~
+
+-   adding pairs
+
+    ~~~~ {.haskell}
+    addPairs :: [(Integer,Integer)] -> [Integer]
+    addPairs pairList = [ m+n | (m,n) <- pairList ]
+    ~~~~
+
+    -   later we will learn:
+
+        ~~~~ {.haskell}
+        addPairs = map $ uncurry (+)
+        ~~~~
+
+-   adding only ordered pairs
+
+
+    ~~~~ {.haskell}
+    addOrdPairs :: [(Integer,Integer)] -> [Integer]
+    addOrdPairs pairList = [ m+n | (m,n) <- pairList, m<n ]
+    ~~~~
+
+## List comprehensions --- even more examples
+
+-   finding all digits
+
+    ~~~~ {.haskell}
+    digits :: String -> String
+    digits str = [ ch | ch<-str, isDigit ch ]
+    ~~~~
+
+-   are all even (or odd)?
+
+    ~~~~ {.haskell}
+    allEven xs = xs == [ x | x<-xs, isEven x ]
+    allOdd  xs = [] == [ x | x<-xs, isEven x ]
+    ~~~~
+
+-   pattern matching in the generator
+
+    ~~~~ {.haskell}
+    totalRadii :: [Shape] -> Float
+    totalRadii shapes = sum [ r | Circle r <- shapes ]
+    ~~~~
+
+-   extract all singletons
+
+    ~~~~ {.haskell}
+    sings :: [[Integer]] -> [Integer]
+    sings xss = [ x | [x]<-xss ]
+    ~~~~
+
+# A library database
+
+## Code from Simon Thompsons Book
+
+~~~~ {.haskell}
+-- Types
+
+type Person = String
+type Book   = String
+
+type Database = [ (Person , Book) ]
+
+-- An example database.
+
+exampleBase :: Database
+exampleBase 
+  = [ ("Alice" , "Tintin")  , ("Anna" , "Little Women") ,
+      ("Alice" , "Asterix") , ("Rory" , "Tintin") ]
+
+-- The books borrowed by a particular person in the given database.
+
+books       :: Database -> Person -> [Book]
+books dBase findPerson
+  = [ book | (person,book) <- dBase , person==findPerson ]
+
+-- Making a loan is done by adding a pair to the database.
+
+makeLoan   :: Database -> Person -> Book -> Database
+makeLoan dBase pers bk = [ (pers,bk) ] ++ dBase
+
+-- To return a loan.
+
+returnLoan   :: Database -> Person -> Book -> Database
+returnLoan dBase pers bk
+  = [ pair | pair <- dBase , pair /= (pers,bk) ]
+
+-- QuickCheck properties for the database
+
+-- Check that bk is in the list of loaned books to pers
+-- after making the loan of book to pers
+
+prop_db1 :: Database -> Person -> Book -> Bool
+
+prop_db1 dBase pers bk =
+    elem bk loanedAfterLoan == True
+         where
+           afterLoan = makeLoan dBase pers bk
+           loanedAfterLoan = books afterLoan pers
+
+-- Check that bk is not in the list of loaned books to pers
+-- after returning the loan of book to pers
+
+prop_db2 :: Database -> Person -> Book -> Bool
+
+prop_db2 dBase pers bk =
+    elem bk loanedAfterReturn == False
+         where
+           afterReturn = returnLoan dBase pers bk
+           loanedAfterReturn = books afterReturn pers
+~~~~
+
+
+<!-- vim:spell spelllang=en: -->

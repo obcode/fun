@@ -2,7 +2,8 @@
 
 SRCS:=	01_Introduction.txt \
 		02_Basic.txt \
-		03_Programs.txt
+		03_Programs.txt \
+		04_TuplesLists.txt
 
 GERMAN= #
 
