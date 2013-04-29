@@ -5,6 +5,7 @@ SRCS:=	01_Introduction.txt \
 		03_Programs.txt \
 		04_TuplesLists.txt \
 		05_MoreLists.txt \
+		06_IO.txt \
 
 GERMAN= #
 
