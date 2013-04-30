@@ -6,6 +6,7 @@ SRCS:=	01_Introduction.txt \
 		04_TuplesLists.txt \
 		05_MoreLists.txt \
 		06_IO.txt \
+		07_Patterns.txt \
 
 GERMAN= #
 
