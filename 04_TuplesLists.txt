@@ -34,7 +34,7 @@ List
     ("Salt: 1kg", 139) :: ShopItem
     ~~~~
 
-## The shopping baskett
+## The shopping basket
 
 -   represented as list of `ShopItem`s
 
@@ -103,9 +103,9 @@ List
 
     ~~~~ {.haskell}
     name :: ShopItem -> String
-    name (n,p) = n
+    name (n,_) = n
     price :: ShopItem -> Int
-    price (n,p) = p
+    price (_,p) = p
     ~~~~
 
 -   using `fst` and `snd`
@@ -194,7 +194,7 @@ score Paper Rock     = 1
 -   Pattern Matching
 
     ~~~~ {.haskell}
-    showPerson :: Person -> String
+    showPerson :: People -> String
     showPerson (Person name age) =
                 name ++ " -- " ++ show age
     ~~~~
@@ -274,6 +274,12 @@ score Paper Rock     = 1
     [7,6..3] == [7,6,5,4,3]
     [0.0,0.3..1.0] == [0.0,0.3,0.6,0.8999999999999999]
     ['a','c'..'n'] == "acegikm"
+    ~~~~
+
+-   `[n..]`
+
+    ~~~~ {.haskell}
+    [1..] == [1,2,3,4,.............]
     ~~~~
 
 ## The `String` type
