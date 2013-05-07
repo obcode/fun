@@ -1,0 +1,216 @@
+% Functional Programming  
+  --- Higher-order functions ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Function composition
+
+-	function composition
+
+	~~~~ {.haskell}
+    (.) :: (b -> c) -> (a -> b) -> a -> c
+	(f . g) x = f (g x)
+	~~~~
+
+-   forward composition (define yourself)
+
+    ~~~~ {.haskell}
+    infixl 9 >.>
+
+    (>.>) :: (a -> b) -> (b -> c) -> a -> c
+    g >.> f = f . g
+    ~~~~
+
+## Function application
+
+-   application operator
+
+    ~~~~ {.haskell}
+    ($) :: (a -> b) -> a -> b
+    f $ x = f x
+    ~~~~
+
+-   alternative to parentheses
+
+    ~~~~ {.haskell}
+    flipV (flipH (rotate horse))
+    flipV $ flipH $ rotate horse
+    ~~~~
+
+-   needed in
+
+    ~~~~ {.haskell}
+    zipWith ($) [sum,product] [[1,2,3],[4,5,6]]
+    ~~~~
+
+## Expressions for functions: lambda expressions
+
+-   instead of
+
+    ~~~~ {.haskell}
+    map addOne [2,3,4]
+    addOne x = x+1
+    ~~~~
+
+    we can write
+
+    ~~~~ {.haskell}
+    map (\x -> x+1) [2,3,4]
+    ~~~~
+
+-   the expression
+
+    ~~~~ {.haskell}
+    \x -> e
+    ~~~~
+
+    is called **lambda abstraction**
+
+## Example of lambda abstractions
+
+~~~~ {.haskell}
+mapFuns :: [a->b] -> a -> [b]
+mapFuns []     _ = []
+mapFuns (f:fs) x = f x : mapFuns fs x
+~~~~
+
+or
+
+~~~~ {.haskell}
+mapFuns fs x = map (\f -> f x) fs
+~~~~
+
+## Plumbing functions together
+
+~~~~ {.haskell}
+comp2 :: (a->b) -> (b->b->c) -> (a->a->c)
+comp2 f g = (\x y -> g (f x) (f y))
+~~~~
+
+~~~~ {.haskell}
+comp2 (^2) (+) 3 4
+~~~~
+
+## Partial application
+
+-   example function
+
+    ~~~~ {.haskell}
+    multiply :: Int -> Int -> Int
+    multiply x y = x*y
+    ~~~~
+
+-   `multiply` has two arguments
+
+-   applying `multiply` (partially) just to one argument, gives a function of type `Int -> Int`
+
+-   example usage
+
+    ~~~~ {.haskell}
+    doubleAll :: [Int] -> [Int]
+    doubleAll = map (multiply 2)
+    ~~~~
+
+## Order of arguments
+
+-   it's only possible to leave out the last arguments, i.e., apply in the correct order
+
+-   you can work around this using lambda abstractions
+
+    ~~~~ {.haskell}
+    map (\x -> elem x ['a'..'z']) "Hello"
+    ~~~~
+
+-   a useful function is
+
+    ~~~~ {.haskell}
+    flip :: (a -> b -> c) -> b -> a -> c
+    ~~~~
+
+    example:
+
+    ~~~~ {.haskell}
+    map (flip  elem ['a'..'z']) "Hallo"
+    ~~~~
+
+## Partially applied operators: operator sections
+
+-   examples:
+
+    ~~~~ {.haskell}
+    (+2)
+    (2+)
+    (>2)
+    (3:)
+    (++"\n")
+    ("\n"++)
+    ($ 3)
+    ~~~~
+
+-   using it like
+
+    ~~~~ {.haskell}
+    filter (>0) . map (+1)
+    ~~~~
+
+## Curried functions
+
+-   named after Haskell Curry
+
+-   a curried function takes its arguments one at a time
+
+-   **every function in Haskell takes exactly one argument**
+
+-   example:
+
+    ~~~~ {.haskell}
+    multiply :: Int -> Int -> Int
+    ~~~~
+
+    is shorthand for
+
+    ~~~~ {.haskell}
+    multiply :: Int -> (Int -> Int)
+    ~~~~
+
+    i.e. a function taking one `Int` returning a function of type `Int -> Int`
+
+    ~~~~ {.haskell}
+    multiply 2 :: Int -> Int
+    ~~~~
+
+    and
+
+    ~~~~ {.haskell}
+    (multiply 2) 5 :: Int
+    ~~~~
+
+-   function application is left associative and `->` is right associative
+
+## Currying and uncurrying
+
+-   curried version:
+
+    ~~~~ {.haskell}
+    multiply :: Int -> Int -> Int
+    multiply x y = x*y
+    ~~~~
+
+-   uncurried version:
+
+    ~~~~ {.haskell}
+    multiplyUC :: (Int, Int) -> Int
+    multiplyUC (x, y) = x*y
+    ~~~~
+
+-   there are two Prelude functions to transform one to another
+
+    ~~~~ {.haskell}
+    curry :: ((a, b) -> c) -> a -> b -> c
+    curry g x y = g (x,y)
+
+    uncurry :: (a -> b -> c) -> (a, b) -> c
+    uncurry f (x,y) = f x y
+    ~~~~
+
+<!-- vim:spell spelllang=en: -->

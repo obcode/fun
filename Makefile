@@ -7,6 +7,7 @@ SRCS:=	01_Introduction.txt \
 		05_MoreLists.txt \
 		06_IO.txt \
 		07_Patterns.txt \
+		08_HigherOrderFunctions.txt \
 
 GERMAN= #
 
