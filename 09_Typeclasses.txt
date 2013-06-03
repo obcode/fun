@@ -1,5 +1,5 @@
 % Functional Programming  
-  --- Overloading, type classes and type checking ---
+  --- Type classes ---
 % Prof. Dr. Oliver Braun
 % SS 2013
 
