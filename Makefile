@@ -8,6 +8,7 @@ SRCS:=	01_Introduction.txt \
 		06_IO.txt \
 		07_Patterns.txt \
 		08_HigherOrderFunctions.txt \
+		09_Typeclasses.txt
 
 GERMAN= #
 

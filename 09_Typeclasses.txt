@@ -1,0 +1,134 @@
+% Functional Programming  
+  --- Overloading, type classes and type checking ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Introducing classes
+
+-	the `elem` function appears to have the type
+
+	~~~~ {.haskell}
+	elem :: a -> [a] -> Bool
+	~~~~
+
+	but only if there is an equality function for `a`
+
+- 	the collection of types for which a specific function is defined is called **type class** or simply a **class**
+
+-	the set of types over which `==` is defined is the **equality class** `Eq`
+
+## Defining the equality class `Eq`
+
+-   the class
+
+    ~~~~ {.haskell}
+    class Eq a where
+        (==) :: a -> a -> Bool
+    ~~~~
+
+-   instances
+
+    ~~~~ {.haskell}
+    instance Eq Move where
+        Rock     == Rock     = True
+        Paper    == Paper    = True
+        Scissors == Scissors = True
+        _        == _        = False
+    ~~~~
+
+## A self-defined class
+
+-   the `Info` class
+
+    ~~~~ {.haskell}
+    class Info a where
+        examples :: [a]
+        size     :: a -> Int
+    ~~~~
+
+-   Instances
+
+    ~~~~ {.haskell}
+    instance Info Char where
+        examples = ['a','A','z','Z','0','9']
+        size _   = 1
+
+    instance Info Bool where
+        examples = [True,False]
+        size _   = 1
+
+    instance Info Int where
+        examples = [-100 .. 100]
+        size _   = 1
+
+    instance Info Shape where
+        examples = [Circle 3.0, Rectangle 45.9 87.6]
+        size     = round . area
+    ~~~~
+
+## Instances and contexts
+
+-   suppose `a` is in the `Info` class
+
+-   we can add lists of `a`s in the `Info` class, e.g.,
+
+    ~~~~ {.haskell}
+    instance Info a => Info [a] where
+        examples = [ [] ] ++
+                   [ [x] | x<-examples ] ++
+                   [ [x,y] | x<-examples, y<-examples ]
+        size     = foldr (+) 1 . map size
+    ~~~~
+
+## Limitations
+
+-   instances in Haskell are *global*
+
+-   it's only possible to add instances for base types and type constructors applied to distinct type variables
+
+-   for example it is not possible to add an instance for `(Float,Float)` or `String`
+
+-   more details in the [Haskell 2010 report](http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-750004.3)
+
+-   GHC has a more flexible mechanism, see [`-XFlexibleInstances`](http://www.haskell.org/ghc/docs/latest/html/users_guide/type-class-extensions.html#instance-rules)
+
+## Default definitions
+
+-   it is possible to add default definitions to a class definition, e.g.,
+
+    ~~~~ {.haskell}
+    class Eq a where
+        (==), (/=) :: a -> a -> Bool
+        x /= y     = not (x == y)
+        x == y     = not (x /= y)
+    ~~~~
+
+-   in the instance declaration those default definitions can be **overridden**
+
+-   the `Info` class with instances
+
+    ~~~~ {.haskell}
+    class Info a where
+        examples :: [a]
+        size     :: a -> Int
+        size _   = 1
+
+    instance Info Char where
+        examples = ['a','A','z','Z','0','9']
+
+    instance Info Bool where
+        examples = [True,False]
+
+    instance Info Int where
+        examples = [-100 .. 100]
+
+    instance Info Shape where
+        examples = [Circle 3.0, Rectangle 45.9 87.6]
+        size     = round . area
+    ~~~~
+
+## The Haskell 2010 classes
+
+![Source: Simon Thomspons Book](img/09/Haskell2010classes.jpg)
+
+<!-- vim:spell spelllang=en: -->
