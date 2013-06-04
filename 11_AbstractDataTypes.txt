@@ -1,0 +1,109 @@
+% Functional Programming  
+  --- Abstract data types ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## ADTs
+
+-   the Haskell module system allows functions and other objects to be hidden when one module is imported into another
+
+-   imformation hiding is equally usable for types
+
+## An example: `Store`
+
+-   a clearly defined interface
+
+    ~~~~ {.haskell}
+    initial :: Store
+    value   :: Store -> Var -> Integer
+    update  :: Store -> Var -> Integer -> Store
+    ~~~~
+
+    with
+
+    ~~~~ {.haskell}
+    type Var = String
+    ~~~~
+
+-   the module header
+
+    ~~~~ {.haskell}
+    module Store ( Store, initial, value, update) where
+    ~~~~
+
+## An implementation using lists
+
+-   the `Store` data type
+
+    ~~~~ {.haskell}
+    data Store = Store [(Integer,Var)]
+    ~~~~
+
+-   the functions
+
+    ~~~~ {.haskell}
+    initial :: Store
+    initial = Store []
+
+    value   :: Store -> Var -> Integer
+    value (Store []) _ = 0
+    value (Store (n,w):sto) v
+        | v==w      = n
+        | otherwise = value (Store sto) v
+
+    update  :: Store -> Var -> Integer -> Store
+    update (Store sto) v n = Store ((n,v):sto)
+    ~~~~
+
+## Using `newtype`
+
+-   instead of
+
+    ~~~~ {.haskell}
+    data Store = Store [(Integer,Var)]
+    ~~~~
+
+    we can write
+
+    ~~~~ {.haskell}
+    newtype Store = Store [(Integer,Var)]
+    ~~~~
+
+    which is more efficient
+
+-   `newtype` only works with **one** constructor and **one** field
+
+-   the type is checked during compilation and the constructor will be removed
+
+    -   no overhead wrt. to the field type in the runtime
+
+    -   but more type safety than a simple type synonym
+
+## Another implementation: stores as functions
+
+-   the `Store` data type
+
+    ~~~~ {.haskell}
+    newtype Store = Store (Var -> Integer)
+    ~~~~
+
+-   the functions
+
+    ~~~~ {.haskell}
+    initial :: Store
+    initial = Store $ const 0 -- \_ -> 0
+
+    value   :: Store -> Var -> Integer
+    value (Store sto) v = sto v
+
+    update  :: Store -> Var -> Integer -> Store
+    update (Store sto) v n =
+        Store (\w -> if v==w then n else sto w)
+    ~~~~
+
+## Queues and Trees
+
+see Chapter 16 of the Craft3e package
+
+
+<!-- vim:spell spelllang=en: -->

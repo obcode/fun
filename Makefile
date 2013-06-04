@@ -10,6 +10,7 @@ SRCS:=	01_Introduction.txt \
 		08_HigherOrderFunctions.txt \
 		09_Typeclasses.txt \
 		10_AlgebraicTypes.txt \
+		11_AbstractDataTypes.txt \
 
 GERMAN= #
 
