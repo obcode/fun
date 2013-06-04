@@ -207,6 +207,31 @@ score Paper Rock     = 1
     People :: String -> Int -> People
     ~~~~
 
+## Record syntax
+
+-   instead of defining the following
+
+    ~~~~ {.haskell}
+    data People = Person Name Age
+        deriving (Eq, Show)
+    name :: People -> Name
+    name (Person n _) = n
+
+    age :: People -> Age
+    age (Person _ a) = a
+    ~~~~
+
+-   we can use the **record syntax** to generate those functions
+
+    ~~~~ {.haskell}
+    data People = Person
+        { name :: Name
+        , age  :: Age
+        } deriving (Eq, Show)
+    ~~~~
+
+    Caution: the parameter of type `People` is not part of the type
+
 ## Alternatives
 
 -   example
