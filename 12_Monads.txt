@@ -1,0 +1,290 @@
+% Functional Programming  
+  --- Programming with monads ---
+% Prof. Dr. Oliver Braun
+% SS 2013
+
+## Interacting at the terminal
+
+~~~~ {.haskell}
+module Main where
+
+import System.IO
+
+main :: IO ()
+main = copyInteract
+
+copyInteract :: IO ()
+copyInteract = do
+    hSetBuffering stdin LineBuffering
+    copyEOF
+    hSetBuffering stdin NoBuffering
+
+copyEOF :: IO ()
+copyEOF = do
+    eof <- isEOF
+    if eof
+        then return ()
+        else do
+            line <- getLine
+            putStrLn line
+            copyEOF
+~~~~
+
+## File I/O
+
+~~~~ {.haskell}
+readFile :: FilePath -> IO String
+writeFile :: FilePath -> String -> IO ()
+appendFile :: FilePath -> String -> IO ()
+
+type FilePath = String
+~~~~
+
+
+## Errors
+
+~~~~ {.haskell}
+ioError :: IOError -> IO a
+~~~~
+
+`IOError` is system-dependent
+
+~~~~ {.haskell}
+import Control.Exception
+catch   :: Exception e => IO a -> (e -> IO a) -> IO a
+~~~~
+
+example:
+
+~~~~ {.haskell}
+catch (readFile f)
+      (\e -> do let err = show (e :: IOException)
+                hPutStr stderr ("Warning: Couldn't open "
+                                ++ f ++ ": " ++ err)
+                return "")
+~~~~
+
+## `System.IO`
+
+see [`System.IO`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/System-IO.html) for more
+
+## The `do` notation revisited
+
+-   the key to understanding the `do` notation is the **bind** operator
+
+    ~~~~ {.haskell}
+    (>>=) :: IO a -> (a -> IO b) -> IO b
+    ~~~~
+
+-   it combines two I/O actions:
+
+    -   an I/O action of type `IO a`
+
+    -   and a function of type `a -> IO b`
+
+-   and results in an I/O action of type `IO b`
+
+-   it can be defined like
+
+    ~~~~ {.haskell}
+    m >>= f = do
+        res <- m
+        f res
+    ~~~~
+
+-   in fact it is the other way round:
+
+    -   `do` is just syntactic sugar on top of `(>>=)`
+
+## Example
+
+-   using `do`
+
+    ~~~~ {.haskell}
+    addOneInt :: IO ()
+    addOneInt = do
+        line <- getLine
+        putStrLn (show (1 + read line :: Int))
+    ~~~~
+
+-   using `(>>=)`
+
+    ~~~~ {.haskell}
+    addOneInt :: IO ()
+    addOneInt = do
+        getLine >>= \line ->
+        putStrLn (show (1 + read line :: Int))
+    ~~~~
+
+-   another example:
+
+    ~~~~ {.haskell}
+    getLine >>= putStrLn
+    ~~~~
+
+## Monads: languages for functional programming
+
+-   `Monad` is a type class
+
+    ~~~~ {.haskell}
+    class Monad m where
+        (>>=)  :: m a -> (a -> m b) -> m b
+        return :: a -> m a
+        (>>)   :: m a -> m b -> m b
+        m >> k = m >>= \_ -> k
+        fail   :: String -> m a
+        fail s = error s
+    ~~~~
+
+-   the monad laws
+
+    left identity
+    :   
+
+        ~~~~ {.haskell}
+        return a >>= f == f a
+        ~~~~
+
+    right identity
+    :   
+
+        ~~~~ {.haskell}
+        m >>= return == m
+        ~~~~
+
+    associativity
+    :   
+
+        ~~~~ {.haskell}
+        (m >>= f) >> g == m >>= (\x -> f x >>= g)
+        ~~~~
+
+## The `Maybe` monad
+
+~~~~ {.haskell}
+instance Monad Maybe where
+    (Just x) >>= k = k x
+    Nothing  >>= _ = Nothing
+    return x       = Just x
+    fail           = Nothing
+~~~~
+
+~~~~ {.haskell}
+do x <- Just 1
+   y <- Just 2
+   return $ x + y -- => Just 3
+~~~~
+
+## The list monad
+
+~~~~ {.haskell}
+instance Monad [] where
+    xs >>= f = concat (map f xs)
+    return x = [x]
+    fail     = []
+~~~~
+
+~~~~ {.haskell}
+do x <- [1,2]
+   y <- [3,4]
+   return (x+y) -- => [4,5,5,6]
+~~~~
+
+## Some standard functions and the `Functor` class
+
+-   defined in [`Control.Monad`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Monad.html
+
+    ~~~~ {.haskell}
+    class Functor f where
+        fmap :: (a -> b) -> f a -> f b
+    ~~~~
+
+    with the functor laws
+
+    ~~~~ {.haskell}
+    fmap id  ==  id
+    fmap (f . g)  ==  fmap f . fmap g
+    ~~~~
+
+-   excercise: define the instances of `Functor` for `Maybe` and lists
+
+## The `State` monad
+
+-   a first approach
+
+    ~~~~ {.haskell}
+    type SimpleState s a = s -> (a, s)
+
+    returnSt :: a -> SimpleState s a
+    returnSt a = \s -> (a, s)
+
+    bindSt ::    (SimpleState s a)
+              -> (a -> SimpleState s b)
+              -> SimpleState s b
+    bindSt m k = \s -> let (a, s') = m s
+                       in (k a) s'
+
+    getSt :: SimpleState s s
+    getSt = \s -> (s, s)
+
+    putSt :: s -> SimpleState s ()
+    putSt s = \_ -> ((), s)
+    ~~~~
+
+## The real `State` monad
+
+~~~~ {.haskell}
+newtype State s a =
+    State { runState :: s -> (a, s) }
+~~~~
+
+~~~~ {.haskell}
+returnState :: a -> State s a
+returnState a = State $ \s -> (a, s)
+
+bindState :: State s a
+          -> (a -> State s b) -> State s b
+bindState m k =
+        State $ \s -> let (a, s') = runState m s
+                      in runState (k a) s'
+
+get :: State s s
+get   = State $ \s -> (s, s)
+
+put :: s -> State s ()
+put s = State $ \_ -> ((), s)
+~~~~
+
+~~~~ {.haskell}
+instance Monad (State s) where
+  return = returnState
+  (>>=) = bindState
+~~~~
+
+## An example using state
+
+~~~~ {.haskell}
+type StepsCount a = State Integer a
+
+fibS :: Integer -> StepsCount Integer
+fibS 0 = return 1
+fibS 1 = return 1
+fibS i = do
+  noOfSteps <- get
+  put $ noOfSteps + 1
+  iMinus1 <- fibS $ i - 1
+  iMinus2 <- fibS $ i - 2
+  return $ iMinus1 + iMinus2
+
+main = do
+  putStr "Enter number: "
+  number <- readLn
+  let (result, count) = runState (fibS number) 0
+  putStrLn $ "fib of " ++ show number
+             ++ " = " ++ show result
+             ++ " (needed " ++ show count
+             ++ " steps to calculate)"
+~~~~
+
+
+<!-- vim:spell spelllang=en: -->

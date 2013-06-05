@@ -11,6 +11,7 @@ SRCS:=	01_Introduction.txt \
 		09_Typeclasses.txt \
 		10_AlgebraicTypes.txt \
 		11_AbstractDataTypes.txt \
+		12_Monads.txt \
 
 GERMAN= #
 
