@@ -7,7 +7,7 @@
 
 -   the Haskell module system allows functions and other objects to be hidden when one module is imported into another
 
--   imformation hiding is equally usable for types
+-   information hiding is equally usable for types
 
 ## An example: `Store`
 

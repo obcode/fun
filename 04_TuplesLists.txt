@@ -204,7 +204,7 @@ score Paper Rock     = 1
 -   we can give the type of the constructor
 
     ~~~~ {.haskell}
-    People :: String -> Int -> People
+    Person :: String -> Int -> People
     ~~~~
 
 ## Record syntax
