@@ -1,4 +1,4 @@
-# (c) 2013 Oliver Braun
+# (c) 2014 Oliver Braun
 
 SRCS:=	01_Introduction.txt \
 		02_Basic.txt \
@@ -16,7 +16,7 @@ SRCS:=	01_Introduction.txt \
 GERMAN= #
 
 LECTURE_NAME:=	fun
-SEMESTER:=	summer term 2013
+SEMESTER:=	summer term 2014
 
 GITHUB=	YES
 
