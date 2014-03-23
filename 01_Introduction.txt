@@ -282,10 +282,23 @@ is simple, e.g.,
 
 ## ...and what's up next?
 
--   a lot of live coding, using FP Haskell Center and GHC/GHCi
+#### in the lectures
 
--   working through [Learn you a haskell for great good!](http://learnyouahaskell.com/chapters)
+-   a lot of live coding, using [FP Haskell Center](https://www.fpcomplete.com/ide) and [GHC/GHCi](http://www.haskell.org/platform/)
+
+-   working through [Learn you a haskell for great good!](http://learnyouahaskell.com/chapters) and
+    [Parallel and Concurrent Programming in Haskell](http://chimera.labs.oreilly.com/books/1230000000929/index.html)
 
 -   plus testing and some advanced topics
+
+#### in the lab
+
+-   practicing Haskell
+
+-   using the [Yesod Web Framework](http://www.yesodweb.com/)
+
+#### for the "benotete Studienarbeit"
+
+-   implementing a web application in Yesod in small groups (1-3 students)
 
 <!-- vim:spell spelllang=en: -->
