@@ -1,6 +1,7 @@
 # (c) 2014 Oliver Braun
 
-SRCS:=	01_Introduction.txt \
+SRCS:=	00_Organisatorisches.txt \
+		01_Introduction.txt \
 #		02_Basic.txt \
 #		03_Programs.txt \
 #		04_TuplesLists.txt \

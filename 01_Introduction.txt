@@ -123,7 +123,7 @@ is simple, e.g.,
 
     ~~~~
       (7 - 3) * 2
-    ➣ 4       * 2
+    ➣ 4      * 2
     ➣ 8
     ~~~~
 
@@ -193,6 +193,8 @@ is simple, e.g.,
     ~~~~ {.haskell}
     square (2+3) = (2+3) * (2+3)
     ~~~~
+
+    lazy evaluation!
 
 ## General form
 
